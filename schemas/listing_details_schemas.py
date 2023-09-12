@@ -153,7 +153,7 @@ class FavoriteUpdate(FavoriteCreate):
 class ExpiriencesBase(BaseModel):
     expirience_name: str
     description: str
-    price: float
+    price_per_person: float
 
 
 class ExpiriencesCreate(ExpiriencesBase):
@@ -170,4 +170,82 @@ class Expiriences(ExpiriencesBase):
 class ExpiriencesUpdate(ExpiriencesCreate):
     expirience_name: Optional[str] = None
     description: Optional[str] = None
+    price_per_person: Optional[float] = None
+
+
+
+#ExpiriencesOrder
+class ExpiriencesOrderBase(BaseModel):
+    date: date
+    number_of_people: int
+    total_cost: float
+
+
+class ExpiriencesOrderCreate(ExpiriencesOrderBase):
+    pass
+
+class ExpiriencesOrder(ExpiriencesOrderBase):
+    id: int
+    guest_id: int
+    expiriences_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ExpiriencesOrderUpdate(ExpiriencesOrderCreate):
+    date: Optional[date] = None
+    number_of_people: Optional[int] = None
+    total_cost: Optional[float] = None
+
+
+#Restaurante
+class RestaurantMenuBase(BaseModel):
+    name: str
+    description: str
+    price: float
+    category: str
+
+
+class RestaurantMenuCreate(RestaurantMenuBase):
+    pass
+
+class RestaurantMenu(RestaurantMenuBase):
+    id: int
+    listing_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class RestaurantMenuUpdate(RestaurantMenuCreate):
+    name: Optional[str] = None
+    description: Optional[str] = None
     price: Optional[float] = None
+    category: str
+
+
+#RestauranteOrder
+class RestauranteOrderBase(BaseModel):
+    date: date
+    type_of_meal: str
+    total_cost: float
+
+
+class RestauranteOrderCreate(RestauranteOrderBase):
+    pass
+
+class RestauranteOrder(RestauranteOrderBase):
+    id: int
+    guest_id: int
+    restaurant_menu_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class RestauranteOrderUpdate(RestauranteOrderCreate):
+    date: Optional[date] = None
+    type_of_meal: Optional[str] = None
+    total_cost: Optional[float] = None
+
