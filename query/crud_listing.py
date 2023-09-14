@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import date
-from models import models
+from models import listing_model as models
 from schemas import listing_schemas as schema
 
 #find listing by ID

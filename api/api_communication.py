@@ -1,13 +1,13 @@
 from fastapi import Depends, APIRouter, HTTPException
 from query import crud_comunication as crud
-from models import models
+from models import communication_model as models
 from schemas import comunication_schemas as schema
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from typing import List 
 
+#models.Base.metadata.create_all(bind=engine)
 
-models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
 
 # Dependency

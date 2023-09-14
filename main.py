@@ -1,22 +1,15 @@
 from fastapi import FastAPI
-from models import models
-from database import SessionLocal, engine
-from api import api_listing, api_listing_details, api_communication, api_user_details
+from database import SessionLocal, engine, Base
+from api import api_listing, api_listing_details, api_communication, api_user_details, api_user, api_payment
 
-models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
-# Dependency
-def get_db():
-    db = None
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
+Base.metadata.create_all(bind=engine)
 
 
-app.include_router(api_listing.router, tags=["Listing"], prefix="/api")
+app.include_router(api_listing.router, prefix="/api")
 app.include_router(api_listing_details.router, prefix="/api")
 app.include_router(api_communication.router, prefix="/api")
+app.include_router(api_payment.router, prefix="/api")
+app.include_router(api_user.router, prefix="/api")
 app.include_router(api_user_details.router, prefix="/api")

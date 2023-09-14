@@ -8,6 +8,8 @@ from typing import Optional
 class BookingBase(BaseModel):
     check_in_date: date
     check_out_date: date
+    total_number_of_bads: int
+    total_number_of_people: int
     total_cost: float
 
 
@@ -28,6 +30,8 @@ class Booking(BookingBase):
 class BookingUpdate(BookingCreate):
     check_in_date: Optional[date] = None
     check_out_date: Optional[date] = None
+    total_number_of_bads: Optional[int] = None
+    total_number_of_people: Optional[int] = None
     total_cost: Optional[float] = None
 
 
@@ -222,20 +226,20 @@ class RestaurantMenuUpdate(RestaurantMenuCreate):
     name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None
-    category: str
+    category: Optional[str] = None
 
 
 #RestauranteOrder
-class RestauranteOrderBase(BaseModel):
+class RestaurantOrderBase(BaseModel):
     date: date
     type_of_meal: str
     total_cost: float
 
 
-class RestauranteOrderCreate(RestauranteOrderBase):
+class RestaurantOrderCreate(RestaurantOrderBase):
     pass
 
-class RestauranteOrder(RestauranteOrderBase):
+class RestaurantOrder(RestaurantOrderBase):
     id: int
     guest_id: int
     restaurant_menu_id: int
@@ -244,7 +248,7 @@ class RestauranteOrder(RestauranteOrderBase):
         orm_mode = True
 
 
-class RestauranteOrderUpdate(RestauranteOrderCreate):
+class RestaurantOrderUpdate(RestaurantOrderCreate):
     date: Optional[date] = None
     type_of_meal: Optional[str] = None
     total_cost: Optional[float] = None

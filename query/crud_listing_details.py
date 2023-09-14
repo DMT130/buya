@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import date
-from models import models
+from models import listing_details_models as models
 from schemas import listing_details_schemas as schema
 from schemas import category_schemas as schema_cat
 
@@ -228,5 +228,104 @@ def update_expiriences(db: Session, expiriences: schema.ExpiriencesUpdate, expir
 def delete_expiriences(db: Session, expiriences: models.Expiriences):
     if expiriences:
         db.delete(expiriences)
+        db.commit()
+        return {"ok": True}
+
+
+#ExpiriencesOrder
+def get_ExpiriencesOrder_by_id(db: Session, user_id: int):
+    return db.query(models.ExpiriencesOrder).filter(models.ExpiriencesOrder.id == user_id).first()
+
+
+def get_ExpiriencesOrder(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.ExpiriencesOrder).offset(skip).limit(limit).all()
+
+
+def create_ExpiriencesOrder(db: Session, guest_id: int,expiriences_id:int, ExpiriencesOrder: schema.ExpiriencesOrderCreate):
+    db_ExpiriencesOrder = models.ExpiriencesOrder(**ExpiriencesOrder.dict(), guest_id=guest_id, expiriences_id=expiriences_id)
+    db.add(db_ExpiriencesOrder)
+    db.commit()
+    db.refresh(db_ExpiriencesOrder)
+    return db_ExpiriencesOrder
+
+def update_ExpiriencesOrder(db: Session, user: schema.ExpiriencesOrderUpdate, user_data: schema.ExpiriencesOrder):
+    ExpiriencesOrder_data = user.dict(exclude_unset=True)
+    for key, value in ExpiriencesOrder_data.items():
+            setattr(user_data, key, value)
+    db.add(user_data)
+    db.commit()
+    db.refresh(user_data)
+    return user_data
+
+
+def delete_ExpiriencesOrder(db: Session, user_id: schema.ExpiriencesOrder):
+    if user_id:
+        db.delete(user_id)
+        db.commit()
+        return {"ok": True}
+
+
+#RestaurantMenu
+def get_RestaurantMenu_by_id(db: Session, user_id: int):
+    return db.query(models.RestaurantMenu).filter(models.RestaurantMenu.id == user_id).first()
+
+
+def get_RestaurantMenu(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.RestaurantMenu).offset(skip).limit(limit).all()
+
+
+def create_RestaurantMenu(db: Session,listing_id:int, RestaurantMenu: schema.RestaurantMenuCreate):
+    db_RestaurantMenu = models.RestaurantMenu(**RestaurantMenu.dict(), listing_id=listing_id)
+    db.add(db_RestaurantMenu)
+    db.commit()
+    db.refresh(db_RestaurantMenu)
+    return db_RestaurantMenu
+
+def update_RestaurantMenu(db: Session, user: schema.RestaurantMenuUpdate, user_data: schema.RestaurantMenu):
+    RestaurantMenu_data = user.dict(exclude_unset=True)
+    for key, value in RestaurantMenu_data.items():
+            setattr(user_data, key, value)
+    db.add(user_data)
+    db.commit()
+    db.refresh(user_data)
+    return user_data
+
+
+def delete_RestaurantMenu(db: Session, user_id: schema.RestaurantMenu):
+    if user_id:
+        db.delete(user_id)
+        db.commit()
+        return {"ok": True}
+
+
+#RestaurantOrder
+def get_RestauranteOrder_by_id(db: Session, user_id: int):
+    return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.id == user_id).first()
+
+
+def get_RestauranteOrder(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.RestaurantOrder).offset(skip).limit(limit).all()
+
+
+def create_RestauranteOrder(db: Session, guest_id:int, restaurant_menu_id: int, RestaurantOrder: schema.RestaurantOrderCreate):
+    db_RestaurantOrder = models.RestaurantOrder(**RestaurantOrder.dict(), guest_id=guest_id, restaurant_menu_id=restaurant_menu_id)
+    db.add(db_RestaurantOrder)
+    db.commit()
+    db.refresh(db_RestaurantOrder)
+    return db_RestaurantOrder
+
+def update_RestauranteOrder(db: Session, user: schema.RestaurantOrderUpdate, user_data: schema.RestaurantOrder):
+    RestaurantOrder_data = user.dict(exclude_unset=True)
+    for key, value in RestaurantOrder_data.items():
+            setattr(user_data, key, value)
+    db.add(user_data)
+    db.commit()
+    db.refresh(user_data)
+    return user_data
+
+
+def delete_RestauranteOrder(db: Session, user_id: schema.RestaurantOrder):
+    if user_id:
+        db.delete(user_id)
         db.commit()
         return {"ok": True}

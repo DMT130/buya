@@ -1,14 +1,13 @@
 from fastapi import Depends, APIRouter, HTTPException
 from query import crud_listing_details as crud
-from models import models
+from models import listing_details_models as models
 from schemas import listing_details_schemas as schema
 from schemas import category_schemas as schemas_cat
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from typing import List 
 
-
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
 
 # Dependency
@@ -281,3 +280,123 @@ def delete_expiriences(expiriences_id: int, db: Session = Depends(get_db)):
     result = crud.delete_expiriences(db, db_expiriences)
     if result:
         raise HTTPException(status_code=200, detail="expiriences deleted")
+
+
+#ExpiriencesOrder
+@router.post("/{guest_id}/{expiriences_id}/expiriences_order/",
+               response_model=schema.ExpiriencesOrder, tags=["Expiriences Order"])
+def create_ExpiriencesOrder(guest_id:int, expiriences_id:int, 
+           ExpiriencesOrder: schema.ExpiriencesOrderCreate, db: Session = Depends(get_db)):
+    return crud.create_ExpiriencesOrder(db=db, ExpiriencesOrder=ExpiriencesOrder, 
+                               guest_id=guest_id, 
+                               expiriences_id=expiriences_id)
+
+
+@router.get("/ExpiriencesOrder/", response_model=List[schema.ExpiriencesOrder], tags=["Expiriences Order"])
+def read_ExpiriencesOrder(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_ExpiriencesOrder = crud.get_ExpiriencesOrder(db, skip=skip, limit=limit)
+    return db_ExpiriencesOrder
+
+@router.get("/{ExpiriencesOrder_id}/ExpiriencesOrder/", response_model=schema.ExpiriencesOrder, tags=["Expiriences Order"])
+def read_ExpiriencesOrder(ExpiriencesOrder_id: int, db: Session = Depends(get_db)):
+    db_ExpiriencesOrder = crud.get_ExpiriencesOrder_by_id(db, ExpiriencesOrder_id)
+    if not db_ExpiriencesOrder:
+        raise HTTPException(status_code=404, detail="ExpiriencesOrder not found")
+    return db_ExpiriencesOrder
+
+@router.patch("/{ExpiriencesOrder_id}/ExpiriencesOrder/", response_model=schema.ExpiriencesOrder, tags=["Expiriences Order"])
+def update_ExpiriencesOrder(ExpiriencesOrder_id: int, ExpiriencesOrder_sch: schema.ExpiriencesOrderUpdate, db: Session = Depends(get_db)):
+     db_ExpiriencesOrder = crud.get_ExpiriencesOrder_by_id(db, ExpiriencesOrder_id)
+     if not db_ExpiriencesOrder:
+        raise HTTPException(status_code=404, detail="ExpiriencesOrder not found")
+     result = crud.update_ExpiriencesOrder(db, ExpiriencesOrder_sch, db_ExpiriencesOrder)
+     return result
+
+@router.delete("/{ExpiriencesOrder_id}/ExpiriencesOrder/", tags=["Expiriences Order"])
+def delete_ExpiriencesOrder(ExpiriencesOrder_id: int, db: Session = Depends(get_db)):
+    db_ExpiriencesOrder = crud.get_ExpiriencesOrder_by_id(db, ExpiriencesOrder_id)
+    if not db_ExpiriencesOrder:
+        raise HTTPException(status_code=404, detail="ExpiriencesOrder not found")
+    result = crud.delete_ExpiriencesOrder(db, db_ExpiriencesOrder)
+    if result:
+        raise HTTPException(status_code=200, detail="ExpiriencesOrder deleted")
+
+
+
+#RestaurantMenu
+@router.post("/{listing_id}/RestaurantMenu/", 
+              response_model=schema.RestaurantMenu, tags=["Restaurant Menu"])
+def create_RestaurantMenu(listing_id:int, RestaurantMenu: schema.RestaurantMenuCreate, 
+                        db: Session = Depends(get_db)):
+    return crud.create_RestaurantMenu(db=db, RestaurantMenu=RestaurantMenu, listing_id=listing_id)
+
+
+@router.get("/RestaurantMenu/", response_model=List[schema.RestaurantMenu], tags=["Restaurant Menu"])
+def read_RestaurantMenu(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_RestaurantMenu = crud.get_RestaurantMenu(db, skip=skip, limit=limit)
+    return db_RestaurantMenu
+
+@router.get("/{RestaurantMenu_id}/RestaurantMenu/", response_model=schema.RestaurantMenu, tags=["Restaurant Menu"])
+def read_RestaurantMenu(RestaurantMenu_id: int, db: Session = Depends(get_db)):
+    db_RestaurantMenu = crud.get_RestaurantMenu_by_id(db, RestaurantMenu_id)
+    if not db_RestaurantMenu:
+        raise HTTPException(status_code=404, detail="RestaurantMenu not found")
+    return db_RestaurantMenu
+
+@router.patch("/{RestaurantMenu_id}/RestaurantMenu/", response_model=schema.RestaurantMenu, tags=["Restaurant Menu"])
+def update_RestaurantMenu(RestaurantMenu_id: int, RestaurantMenu_sch: schema.RestaurantMenuUpdate, db: Session = Depends(get_db)):
+     db_RestaurantMenu = crud.get_RestaurantMenu_by_id(db, RestaurantMenu_id)
+     if not db_RestaurantMenu:
+        raise HTTPException(status_code=404, detail="RestaurantMenu not found")
+     result = crud.update_RestaurantMenu(db, RestaurantMenu_sch, db_RestaurantMenu)
+     return result
+
+@router.delete("/{RestaurantMenu_id}/RestaurantMenu/", tags=["Restaurant Menu"])
+def delete_RestaurantMenu(RestaurantMenu_id: int, db: Session = Depends(get_db)):
+    db_RestaurantMenu = crud.get_RestaurantMenu_by_id(db, RestaurantMenu_id)
+    if not db_RestaurantMenu:
+        raise HTTPException(status_code=404, detail="RestaurantMenu not found")
+    result = crud.delete_RestaurantMenu(db, db_RestaurantMenu)
+    if result:
+        raise HTTPException(status_code=200, detail="RestaurantMenu deleted")
+
+
+#RestauranteOrder
+@router.post("/{guest_id}/{restaurant_menu_id}/RestauranteOrder/", 
+              response_model=schema.RestaurantOrder, tags=["Restaurante Order"])
+def create_RestauranteOrder(guest_id:int, restaurant_menu_id:int, 
+                            RestauranteOrder: schema.RestaurantOrderCreate, 
+                            db: Session = Depends(get_db)):
+    return crud.create_RestauranteOrder(db=db, RestaurantOrder=RestauranteOrder, 
+                               guest_id=guest_id, 
+                               restaurant_menu_id=restaurant_menu_id)
+
+
+@router.get("/RestauranteOrder/", response_model=List[schema.RestaurantOrder], tags=["Restaurante Order"])
+def read_RestauranteOrder(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_RestauranteOrder = crud.get_RestauranteOrder(db, skip=skip, limit=limit)
+    return db_RestauranteOrder
+
+@router.get("/{RestauranteOrder_id}/RestauranteOrder/", response_model=schema.RestaurantOrder, tags=["Restaurante Order"])
+def read_RestauranteOrder(RestauranteOrder_id: int, db: Session = Depends(get_db)):
+    db_RestauranteOrder = crud.get_RestauranteOrder_by_id(db, RestauranteOrder_id)
+    if not db_RestauranteOrder:
+        raise HTTPException(status_code=404, detail="RestauranteOrder not found")
+    return db_RestauranteOrder
+
+@router.patch("/{RestauranteOrder_id}/RestauranteOrder/", response_model=schema.RestaurantOrder, tags=["Restaurante Order"])
+def update_RestauranteOrder(RestauranteOrder_id: int, RestauranteOrder_sch: schema.RestaurantOrderUpdate, db: Session = Depends(get_db)):
+     db_RestauranteOrder = crud.get_RestauranteOrder_by_id(db, RestauranteOrder_id)
+     if not db_RestauranteOrder:
+        raise HTTPException(status_code=404, detail="RestauranteOrder not found")
+     result = crud.update_RestauranteOrder(db, RestauranteOrder_sch, db_RestauranteOrder)
+     return result
+
+@router.delete("/{RestauranteOrder_id}/RestauranteOrder/", tags=["Restaurante Order"])
+def delete_RestauranteOrder(RestauranteOrder_id: int, db: Session = Depends(get_db)):
+    db_RestauranteOrder = crud.get_RestauranteOrder_by_id(db, RestauranteOrder_id)
+    if not db_RestauranteOrder:
+        raise HTTPException(status_code=404, detail="RestauranteOrder not found")
+    result = crud.delete_RestauranteOrder(db, db_RestauranteOrder)
+    if result:
+        raise HTTPException(status_code=200, detail="RestauranteOrder deleted")

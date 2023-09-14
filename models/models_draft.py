@@ -3,28 +3,6 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 
-class User(Base):
-    __tablename__ = 'users'
-    
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50), nullable=False, unique=True)
-    email = Column(String(100), nullable=False, unique=True)
-    password = Column(String(100), nullable=False)
-    creation_Date = Column(DateTime, default=func.now())
-    activated = Column(Boolean, default=False)
-    # Add more user profile fields as needed
-
-    user_data = relationship("UserDetails", back_populates='user')
-    user_role = relationship("UserRole", back_populates='user')
-    user_listing = relationship("Listing", back_populates='user')
-    user_booking = relationship("Booking", back_populates='user')
-    user_review = relationship("Review", back_populates='user')
-    user_favorite = relationship("Favorite", back_populates='user')
-    user_notification = relationship("Notification", back_populates='user')
-    user_payment = relationship("PaymentTransaction", back_populates='user')
-    order_expirience = relationship("ExpiriencesOrder", back_populates='user')
-    order_restaurant = relationship("RestaurantOrder", back_populates='user')
-
 class UserDetails(Base):
     __tablename__ = 'user_details'
     
@@ -56,6 +34,27 @@ class UserRole(Base):
     creation_Date = Column(DateTime, default=func.now())
 
     user = relationship("User", back_populates='user_role')
+
+class User(Base):
+    __tablename__ = 'users'
+    
+    id = Column(Integer, primary_key=True)
+    email = Column(String(100), nullable=False, unique=True)
+    password = Column(String(100), nullable=False)
+    creation_Date = Column(DateTime, default=func.now())
+    activated = Column(Boolean, default=False)
+    # Add more user profile fields as needed
+
+    user_data = relationship("UserDetails", back_populates='user')
+    user_role = relationship("UserRole", back_populates='user')
+    user_listing = relationship("Listing", back_populates='user')
+    user_booking = relationship("Booking", back_populates='user')
+    user_review = relationship("Review", back_populates='user')
+    user_favorite = relationship("Favorite", back_populates='user')
+    user_notification = relationship("Notification", back_populates='user')
+    user_payment = relationship("PaymentTransaction", back_populates='user')
+    order_expirience = relationship("ExpiriencesOrder", back_populates='user')
+    order_restaurant = relationship("RestaurantOrder", back_populates='user')
 
 class Listing(Base):
     __tablename__ = 'listings'
@@ -91,7 +90,6 @@ class Listing(Base):
     user_booking = relationship("Booking", back_populates='user_listing')
     user_review = relationship("Review", back_populates='user_listing')
     user_favorite = relationship("Favorite", back_populates='user_listing')
-    user_payment = relationship("PaymentTransaction", back_populates='user_listing')
     listing_amenities = relationship("Amenity", back_populates='user_listing')
     listing_rules = relationship("HouseRules", back_populates='user_listing')
     categories = relationship("ListingCategory", back_populates='user_listing')
@@ -171,7 +169,7 @@ class RestaurantMenu(Base):
     order_restaurant = relationship("RestaurantOrder", back_populates='menu_restaurant')
 
 
-class RestaurantOrder(base):
+class RestaurantOrder(Base):
     __tablename__ = 'restaurant_order'
 
     id = Column(Integer, primary_key=True)

@@ -1,12 +1,12 @@
 from fastapi import Depends, APIRouter, HTTPException, UploadFile, File
 from query import crud_user_details as crud
-from models import models
+from models import user_details_models as models
 from schemas import user_details_schemas as schema
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from typing import List
 
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
 
 # Dependency

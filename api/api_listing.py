@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException, UploadFile, File
 from query import crud_listing as crud
-from models import models
+from models import listing_model as models
 from schemas import listing_schemas as schema
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
@@ -9,7 +9,7 @@ import os.path
 import shutil
 from datetime import date
 
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
 
 # Dependency

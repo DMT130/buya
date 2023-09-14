@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import date
-from models import models
+from models import communication_model as models
 from schemas import comunication_schemas as schema
 
 #Booking

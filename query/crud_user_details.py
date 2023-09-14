@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import date
-from models import models
+from models import user_details_models as models
 from schemas import user_details_schemas as schema
 
 #find user_details by ID

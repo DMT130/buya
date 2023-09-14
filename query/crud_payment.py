@@ -1,14 +1,20 @@
 from sqlalchemy.orm import Session
 from datetime import date
-from models import models
+from models import payment_model as models
 from schemas import payment_schemas as schema
 
 #payment
 def create_payment(db: Session, 
                     payment: schema.PaymentTransactionCreate,
                     user_id: int,
-                    listing_id: int):
-    db_payment = models.PaymentTransaction(**payment.dict(), user_id=user_id, listing_id=listing_id)
+                    bookings_id: int,
+                    expiriences_order_id: int,
+                    restaurant_order_id: int
+                    ):
+    db_payment = models.PaymentTransaction(**payment.dict(), 
+                        user_id=user_id, bookings_id=bookings_id,
+                        expiriences_order_id=expiriences_order_id,
+                        restaurant_order_id=restaurant_order_id)
     db.add(db_payment)
     db.commit()
     db.refresh(db_payment)
