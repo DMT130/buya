@@ -1,10 +1,11 @@
 from fastapi import Depends, APIRouter, HTTPException
 from query import crud_user as crud
-from models import user_model as models
 from schemas import user_schemas as schema
-from database import SessionLocal, engine
+from database import SessionLocal
 from sqlalchemy.orm import Session
 from typing import List 
+from api.api_auth_user import get_current_active_user, get_current_user
+
 
 #models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
@@ -16,6 +17,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 
 @router.post("/user/", response_model=schema.User, tags=["User"])
@@ -36,7 +38,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 @router.patch("/{user_id}/user/", response_model=schema.User, tags=["User"])
-def update_user(user_id: int, user_sch: schema.UserUpdate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user_sch: schema.UserUpdate, db: Session = Depends(get_db), current_user: schema.User=Depends(get_current_user)):
      db_user = crud.get_user_by_id(db, user_id)
      if not db_user:
         raise HTTPException(status_code=404, detail="user not found")
@@ -44,7 +46,7 @@ def update_user(user_id: int, user_sch: schema.UserUpdate, db: Session = Depends
      return result
 
 @router.delete("/{user_id}/user/", tags=["User"])
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(user_id: int, db: Session = Depends(get_db), current_user: schema.User=Depends(get_current_active_user)):
     db_user = crud.get_user_by_id(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="user not found")
