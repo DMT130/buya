@@ -82,6 +82,9 @@ def delete_role(db: Session, role: schema.Role):
 def get_userole_by_id(db: Session, userole_id: int):
     return db.query(models.UserRole).filter(models.UserRole.id == userole_id).first()
 
+def get_userole_by_user_id(db: Session, user_id: int):
+    return db.query(models.UserRole).filter(models.UserRole.user_id == user_id).first()
+
 #Get user_details
 def get_userole(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.UserRole).offset(skip).limit(limit).all()

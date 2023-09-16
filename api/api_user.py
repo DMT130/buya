@@ -4,7 +4,7 @@ from schemas import user_schemas as schema
 from database import SessionLocal
 from sqlalchemy.orm import Session
 from typing import List 
-from api.api_auth_user import get_current_active_user, get_current_user
+from api.api_auth_user import get_current_active_user, get_current_user, check_admin_rights
 
 
 #models.Base.metadata.create_all(bind=engine)
@@ -26,12 +26,14 @@ def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/user/", response_model=List[schema.User], tags=["User"])
-def read_user(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_user(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: schema.User=Depends(check_admin_rights)):
     db_user = crud.get_user(db, skip=skip, limit=limit)
     return db_user
 
 @router.get("/{user_id}/user/", response_model=schema.User, tags=["User"])
-def read_user(user_id: int, db: Session = Depends(get_db)):
+def read_user(user_id: int, db: Session = Depends(get_db), current_user: schema.User=Depends(get_current_user)):
+    if current_user.id != user_id:
+         raise HTTPException(status_code=403, detail="You can only read your own user")
     db_user = crud.get_user_by_id(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="user not found")
@@ -39,6 +41,8 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.patch("/{user_id}/user/", response_model=schema.User, tags=["User"])
 def update_user(user_id: int, user_sch: schema.UserUpdate, db: Session = Depends(get_db), current_user: schema.User=Depends(get_current_user)):
+     if current_user.id != user_id:
+         raise HTTPException(status_code=403, detail="You can only update your own user")
      db_user = crud.get_user_by_id(db, user_id)
      if not db_user:
         raise HTTPException(status_code=404, detail="user not found")
@@ -46,7 +50,9 @@ def update_user(user_id: int, user_sch: schema.UserUpdate, db: Session = Depends
      return result
 
 @router.delete("/{user_id}/user/", tags=["User"])
-def delete_user(user_id: int, db: Session = Depends(get_db), current_user: schema.User=Depends(get_current_active_user)):
+def delete_user(user_id: int, db: Session = Depends(get_db), current_user: schema.User=Depends(get_current_user)):
+    if current_user.id != user_id:
+         raise HTTPException(status_code=403, detail="You can only delete your own user")
     db_user = crud.get_user_by_id(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="user not found")

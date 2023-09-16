@@ -9,6 +9,7 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from database import SessionLocal
 from query import crud_user as crud
+from query import crud_user_details as crud_detais
 
 SECRET_KEY = "aac6280e30ccb738414ada285d34b403f3a453f3dcecb0878e24421c6b1f6e07"
 ALGORITHM = "HS256"
@@ -65,6 +66,19 @@ def get_current_user(db: Session= Depends(get_db), token: str=Depends(oauth2_sch
     return user
 
 def get_current_active_user(current_user: schema.User=Depends(get_current_user)):
+    if current_user.activated:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+def check_admin_rights(db: Session= Depends(get_db), current_user: schema.User=Depends(get_current_user)):
+    role_user = crud_detais.get_userole_by_user_id(db, current_user.id)
+    if role_user is None:
+        raise HTTPException(status_code=401, detail="Insuficient right to perform this action")
+    role = crud_detais.get_role_by_id(db, role_user.role_id)
+    if role is None:
+        raise HTTPException(status_code=401, detail="Insuficient right to perform this action")
+    if role.name != 'Admin':
+        raise HTTPException(status_code=401, detail="Insuficient right to perform this action")
     if current_user.activated:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
