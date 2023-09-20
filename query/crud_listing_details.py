@@ -299,9 +299,11 @@ def delete_RestaurantMenu(db: Session, user_id: schema.RestaurantMenu):
 
 
 #RestaurantOrder
-def get_RestauranteOrder_by_id(db: Session, user_id: int):
-    return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.id == user_id).first()
+def get_RestauranteOrder_by_id(db: Session, id: int):
+    return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.id == id).first()
 
+def get_RestauranteOrder_by_user_id(db: Session, user_id: int):
+    return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.guest_id == user_id).all()
 
 def get_RestauranteOrder(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.RestaurantOrder).offset(skip).limit(limit).all()

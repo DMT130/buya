@@ -2,6 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException, UploadFile, File
 from query import crud_payment as crud
 from models import payment_model as models
 from schemas import payment_schemas as schema
+from query import crud_listing_details as crud_sh
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from typing import List 
@@ -25,8 +26,21 @@ def get_db():
 def create_payment(user_id:int, bookings_id:int,expiriences_order_id:int, 
                    restaurant_order_id: int, payment: schema.PaymentTransactionCreate, db: Session = Depends(get_db),
                    current_user: schema_user.User=Depends(get_current_active_user)):
+    total_amount = 0
+    booking = crud_sh.get_booking_by_id(db, bookings_id).total_cost
+    expirience = crud_sh.get_ExpiriencesOrder_by_id(db, expiriences_order_id).total_cost
+    order_by_date = crud_sh.get_RestauranteOrder_by_id(db, expiriences_order_id).date
+    order_user = crud_sh.get_RestauranteOrder_by_user_id(db, user_id)
+    
+    for i in order_user:
+        if i.date == order_by_date:
+            cost = i.total_cost*i.number_of_meals
+            total_amount+= cost
+    
+    payment.amount = booking+expirience+total_amount
+    total_amount=0
     return crud.create_payment(db=db, payment=payment, 
-                               Customer_ID=user_id, 
+                               user_id=user_id, 
                                bookings_id=bookings_id, 
                                expiriences_order_id=expiriences_order_id,
                                restaurant_order_id=restaurant_order_id)

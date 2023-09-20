@@ -24,6 +24,7 @@ class Booking(Base):
     total_number_of_people = Column(Integer, nullable=False)
     total_cost = Column(Float, nullable=False)
     creation_Date = Column(DateTime, default=func.now())
+    number_of_rooms =  Column(Integer, nullable=True)
     
 
     user = relationship("User", back_populates='user_booking')
@@ -50,9 +51,10 @@ class ExpiriencesOrder(Base):
     id = Column(Integer, primary_key=True, index=True)
     guest_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     expiriences_id = Column(Integer, ForeignKey('expiriences.id'), nullable=False)
-    date= Column(Date, nullable=False)
     number_of_people = Column(Integer, nullable=False)
+    number_of_repetition = Column(Integer, nullable=False)
     total_cost  = Column(Float, nullable=False)
+    date = Column(DateTime, default=func.now())
 
     user = relationship("User", back_populates='order_expirience')
     additional_services = relationship("Expiriences", back_populates='order_expirience')
@@ -82,6 +84,7 @@ class RestaurantOrder(Base):
     date = Column(Date, nullable=False)
     type_of_meal = Column(String)
     total_cost  = Column(Float, nullable=False) 
+    number_of_meals = Column(Integer)
 
     user = relationship("User", back_populates='order_restaurant')
     menu_restaurant = relationship("RestaurantMenu", back_populates='order_restaurant')

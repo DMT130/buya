@@ -4,9 +4,12 @@ from api import (api_listing, api_listing_details,
                  api_communication, api_user_details, 
                  api_user, api_payment, api_auth_user)
 
-app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+
 
 app.include_router(api_auth_user.router, prefix="/api")
 app.include_router(api_listing.router, prefix="/api")

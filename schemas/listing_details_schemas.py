@@ -10,6 +10,7 @@ class BookingBase(BaseModel):
     check_out_date: date
     total_number_of_bads: int
     total_number_of_people: int
+    number_of_rooms: int
     total_cost: float
 
 
@@ -21,6 +22,7 @@ class Booking(BookingBase):
     guest_id: int
     listing_id: int
     creation_Date: date
+    
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
@@ -180,8 +182,8 @@ class ExpiriencesUpdate(ExpiriencesCreate):
 
 #ExpiriencesOrder
 class ExpiriencesOrderBase(BaseModel):
-    date: date
     number_of_people: int
+    number_of_repetition: int
     total_cost: float
 
 
@@ -198,9 +200,9 @@ class ExpiriencesOrder(ExpiriencesOrderBase):
 
 
 class ExpiriencesOrderUpdate(ExpiriencesOrderCreate):
-    date: Optional[date] = None
     number_of_people: Optional[int] = None
     total_cost: Optional[float] = None
+    number_of_repetition:  Optional[int] = None
 
 
 #Restaurante
@@ -234,6 +236,7 @@ class RestaurantOrderBase(BaseModel):
     date: date
     type_of_meal: str
     total_cost: float
+    number_of_meals: int
 
 
 class RestaurantOrderCreate(RestaurantOrderBase):
@@ -252,4 +255,5 @@ class RestaurantOrderUpdate(RestaurantOrderCreate):
     date: Optional[date] = None
     type_of_meal: Optional[str] = None
     total_cost: Optional[float] = None
+    number_of_meals: Optional[int] = None
 

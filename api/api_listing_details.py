@@ -1,5 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException
 from query import crud_listing_details as crud
+from query import crud_listing as crud_list
 from models import listing_details_models as models
 from schemas import listing_details_schemas as schema
 from schemas import category_schemas as schemas_cat
@@ -21,11 +22,15 @@ def get_db():
         db.close()
 
 
+#Booking
 @router.post("/{listing_id}/{guest_id}/booking/", 
              response_model=schema.Booking, tags=["booking"])
 def create_booking(listing_id:int, guest_id:int, 
                    booking: schema.BookingCreate, db: Session = Depends(get_db),
                    current_user: schema_user.User=Depends(get_current_active_user)):
+    listing = crud_list.get_listing_by_id(db, listing_id)
+    date_delta = booking.check_out_date - booking.check_in_date
+    booking.total_cost = date_delta.days*listing.price_per_night*booking.number_of_rooms
     return crud.create_booking(db=db, booking=booking, 
                                guest_id=guest_id, 
                                listing_id=listing_id)
@@ -228,7 +233,8 @@ def delete_favorite(favorite_id: int, db: Session = Depends(get_db), current_use
 
 #ListingCategory
 @router.post("/ListingCategory/", response_model=schemas_cat.ListingCategory, tags=["Listing Category"])
-def create_ListingCategory(ListingCategory: schemas_cat.ListingCategoryCreate, db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+def create_ListingCategory(ListingCategory: schemas_cat.ListingCategoryCreate, db: Session = Depends(get_db), 
+                           current_user: schema_user.User=Depends(get_current_active_user)):
     return crud.create_ListingCategory(db=db, ListingCategory=ListingCategory)
 
 
@@ -247,7 +253,8 @@ def read_ListingCategory(ListingCategory_id: int, db: Session = Depends(get_db),
     return db_ListingCategory
 
 @router.patch("/{ListingCategory_id}/ListingCategory/", response_model=schemas_cat.ListingCategory, tags=["Listing Category"])
-def update_ListingCategory(ListingCategory_id: int, ListingCategory_sch: schemas_cat.ListingCategoryUpdate, db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+def update_ListingCategory(ListingCategory_id: int, ListingCategory_sch: schemas_cat.ListingCategoryUpdate, db: Session = Depends(get_db), 
+                           current_user: schema_user.User=Depends(get_current_active_user)):
      db_ListingCategory = crud.get_ListingCategory_by_id(db, ListingCategory_id)
      if not db_ListingCategory:
         raise HTTPException(status_code=404, detail="ListingCategory not found")
@@ -255,7 +262,8 @@ def update_ListingCategory(ListingCategory_id: int, ListingCategory_sch: schemas
      return result
 
 @router.delete("/{ListingCategory_id}/ListingCategory/", tags=["Listing Category"])
-def delete_ListingCategory(ListingCategory_id: int, db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+def delete_ListingCategory(ListingCategory_id: int, db: Session = Depends(get_db), 
+                           current_user: schema_user.User=Depends(get_current_active_user)):
     db_ListingCategory = crud.get_ListingCategory_by_id(db, ListingCategory_id)
     if not db_ListingCategory:
         raise HTTPException(status_code=404, detail="ListingCategory not found")
@@ -266,7 +274,8 @@ def delete_ListingCategory(ListingCategory_id: int, db: Session = Depends(get_db
 
 #Expiriences
 @router.post("/{listing_id}/expiriences/", response_model=schema.Expiriences, tags=["Expiriences"])
-def create_expiriences(listing_id:int, expiriences: schema.ExpiriencesCreate, db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+def create_expiriences(listing_id:int, expiriences: schema.ExpiriencesCreate, db: Session = Depends(get_db), 
+                       current_user: schema_user.User=Depends(get_current_active_user)):
     return crud.create_expiriences(db=db, expiriences=expiriences, 
                                listing_id=listing_id)
 
@@ -286,7 +295,8 @@ def read_expiriences(expiriences_id: int, db: Session = Depends(get_db),
     return db_expiriences
 
 @router.patch("/{expiriences_id}/expiriences/", response_model=schema.Expiriences, tags=["Expiriences"])
-def update_expiriences(expiriences_id: int, expiriences_sch: schema.ExpiriencesUpdate, db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+def update_expiriences(expiriences_id: int, expiriences_sch: schema.ExpiriencesUpdate, db: Session = Depends(get_db), 
+                       current_user: schema_user.User=Depends(get_current_active_user)):
      db_expiriences = crud.get_expiriences_by_id(db, expiriences_id)
      if not db_expiriences:
         raise HTTPException(status_code=404, detail="expiriences not found")
@@ -307,7 +317,11 @@ def delete_expiriences(expiriences_id: int, db: Session = Depends(get_db), curre
 @router.post("/{guest_id}/{expiriences_id}/expiriences_order/",
                response_model=schema.ExpiriencesOrder, tags=["Expiriences Order"])
 def create_ExpiriencesOrder(guest_id:int, expiriences_id:int, 
-           ExpiriencesOrder: schema.ExpiriencesOrderCreate, db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+           ExpiriencesOrder: schema.ExpiriencesOrderCreate, db: Session = Depends(get_db), 
+           current_user: schema_user.User=Depends(get_current_active_user)):
+    #total _cost = price_person*number_of_people*number_of_repetition
+    db_expiriences = crud.get_expiriences_by_id(db, expiriences_id)
+    ExpiriencesOrder.total_cost = db_expiriences.price_per_person*ExpiriencesOrder.number_of_people*ExpiriencesOrder.number_of_repetition
     return crud.create_ExpiriencesOrder(db=db, ExpiriencesOrder=ExpiriencesOrder, 
                                guest_id=guest_id, 
                                expiriences_id=expiriences_id)
@@ -349,7 +363,8 @@ def delete_ExpiriencesOrder(ExpiriencesOrder_id: int, db: Session = Depends(get_
 @router.post("/{listing_id}/RestaurantMenu/", 
               response_model=schema.RestaurantMenu, tags=["Restaurant Menu"])
 def create_RestaurantMenu(listing_id:int, RestaurantMenu: schema.RestaurantMenuCreate, 
-                        db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+                        db: Session = Depends(get_db), 
+                        current_user: schema_user.User=Depends(get_current_active_user)):
     return crud.create_RestaurantMenu(db=db, RestaurantMenu=RestaurantMenu, listing_id=listing_id)
 
 
@@ -392,7 +407,10 @@ def delete_RestaurantMenu(RestaurantMenu_id: int, db: Session = Depends(get_db),
               response_model=schema.RestaurantOrder, tags=["Restaurante Order"])
 def create_RestauranteOrder(guest_id:int, restaurant_menu_id:int, 
                             RestauranteOrder: schema.RestaurantOrderCreate, 
-                            db: Session = Depends(get_db), current_user: schema_user.User=Depends(get_current_active_user)):
+                            db: Session = Depends(get_db), 
+                            current_user: schema_user.User=Depends(get_current_active_user)):
+    restaurant_menu = crud.get_RestaurantMenu_by_id(db, restaurant_menu_id)
+    RestauranteOrder.total_cost = RestauranteOrder.number_of_meals*restaurant_menu.price
     return crud.create_RestauranteOrder(db=db, RestaurantOrder=RestauranteOrder, 
                                guest_id=guest_id, 
                                restaurant_menu_id=restaurant_menu_id)
