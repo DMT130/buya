@@ -8,13 +8,13 @@ def create_payment(db: Session,
                     payment: schema.PaymentTransactionCreate,
                     user_id: int,
                     bookings_id: int,
-                    expiriences_order_id: int,
-                    restaurant_order_id: int
+                    expiriences_list_id: int=0,
+                    restaurant_ticked_id: int=0
                     ):
     db_payment = models.PaymentTransaction(**payment.dict(), 
                         user_id=user_id, bookings_id=bookings_id,
-                        expiriences_order_id=expiriences_order_id,
-                        restaurant_order_id=restaurant_order_id)
+                        expiriences_list_id=expiriences_list_id,
+                        restaurant_ticked_id=restaurant_ticked_id)
     db.add(db_payment)
     db.commit()
     db.refresh(db_payment)

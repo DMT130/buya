@@ -194,6 +194,7 @@ class ExpiriencesOrder(ExpiriencesOrderBase):
     id: int
     guest_id: int
     expiriences_id: int
+    expiriences_list_id: int
 
     class Config:
         orm_mode = True
@@ -246,6 +247,7 @@ class RestaurantOrder(RestaurantOrderBase):
     id: int
     guest_id: int
     restaurant_menu_id: int
+    restaurant_ticked_id: int
 
     class Config:
         orm_mode = True
@@ -257,3 +259,46 @@ class RestaurantOrderUpdate(RestaurantOrderCreate):
     total_cost: Optional[float] = None
     number_of_meals: Optional[int] = None
 
+
+
+#RestaurantTicked
+class RestaurantTickedBase(BaseModel):
+    pass
+
+
+class RestaurantTickedCreate(RestaurantTickedBase):
+    pass
+
+class RestaurantTicked(RestaurantTickedBase):
+    id: int
+    user_id: int
+    creating_date: date
+
+    class Config:
+        orm_mode = True
+
+
+class RestaurantTickedUpdate(RestaurantTickedCreate):
+    user_id: Optional[int] = None
+
+
+
+#ExpiriencesList
+class ExpiriencesListBase(BaseModel):
+    pass
+
+
+class ExpiriencesListCreate(ExpiriencesListBase):
+    pass
+
+class ExpiriencesList(ExpiriencesListBase):
+    id: int
+    user_id: int
+    creating_date: date
+
+    class Config:
+        orm_mode = True
+
+
+class ExpiriencesListUpdate(ExpiriencesListCreate):
+    user_id: Optional[int] = None

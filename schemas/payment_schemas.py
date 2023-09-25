@@ -17,8 +17,8 @@ class PaymentTransaction(PaymentTransactionBase):
     id: int
     user_id: int
     bookings_id: Optional[int] = None
-    expiriences_order_id: Optional[int] = None
-    restaurant_order_id: Optional[int] = None
+    expiriences_list_id: Optional[int] = None
+    restaurant_ticked_id: Optional[int] = None
     payment_date: date
 
     class Config:

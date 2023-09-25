@@ -240,9 +240,17 @@ def get_ExpiriencesOrder_by_id(db: Session, user_id: int):
 def get_ExpiriencesOrder(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.ExpiriencesOrder).offset(skip).limit(limit).all()
 
+def get_ExpiriencesOrder_by_list_id(db: Session, expiriences_list_id: int):
+    return db.query(models.ExpiriencesOrder).filter(models.ExpiriencesOrder.expiriences_list_id == expiriences_list_id).first()
 
-def create_ExpiriencesOrder(db: Session, guest_id: int,expiriences_id:int, ExpiriencesOrder: schema.ExpiriencesOrderCreate):
-    db_ExpiriencesOrder = models.ExpiriencesOrder(**ExpiriencesOrder.dict(), guest_id=guest_id, expiriences_id=expiriences_id)
+def get_All_ExpiriencesOrder_by_id(db: Session, expiriences_list_id: int):
+    return db.query(models.ExpiriencesOrder).filter(models.ExpiriencesOrder.expiriences_list_id == expiriences_list_id).all()
+
+
+def create_ExpiriencesOrder(db: Session, guest_id: int,expiriences_id:int, 
+                            expiriences_list_id: int,
+                            ExpiriencesOrder: schema.ExpiriencesOrderCreate):
+    db_ExpiriencesOrder = models.ExpiriencesOrder(**ExpiriencesOrder.dict(), guest_id=guest_id, expiriences_id=expiriences_id, expiriences_list_id=expiriences_list_id)
     db.add(db_ExpiriencesOrder)
     db.commit()
     db.refresh(db_ExpiriencesOrder)
@@ -298,6 +306,76 @@ def delete_RestaurantMenu(db: Session, user_id: schema.RestaurantMenu):
         return {"ok": True}
 
 
+#ExpiriencesList
+def get_ExpiriencesList_by_id(db: Session, ExpiriencesList_id: int):
+    return db.query(models.ExpiriencesList).filter(models.ExpiriencesList.id == ExpiriencesList_id).first()
+
+#Get ExpiriencesLists
+def get_ExpiriencesList(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.ExpiriencesList).offset(skip).limit(limit).all()
+
+
+#create appolice
+def create_ExpiriencesList(db: Session, user_id:int,  ExpiriencesList: schema.ExpiriencesListCreate):
+    db_ExpiriencesList = models.ExpiriencesList(**ExpiriencesList.dict(), user_id=user_id)
+    db.add(db_ExpiriencesList)
+    db.commit()
+    db.refresh(db_ExpiriencesList)
+    return db_ExpiriencesList
+
+def update_ExpiriencesList(db: Session, ExpiriencesList: schema.ExpiriencesListUpdate, ExpiriencesList_data: schema.ExpiriencesList):
+    ExpiriencesList = ExpiriencesList.dict(exclude_unset=True)
+    for key, value in ExpiriencesList.items():
+            setattr(ExpiriencesList_data, key, value)
+    db.add(ExpiriencesList_data)
+    db.commit()
+    db.refresh(ExpiriencesList_data)
+    return ExpiriencesList_data
+
+
+def delete_ExpiriencesList(db: Session, ExpiriencesList: schema.ExpiriencesList):
+    if ExpiriencesList:
+        db.delete(ExpiriencesList)
+        db.commit()
+        return {"ok": True}
+    
+
+
+#RestaurantTicked
+def get_RestaurantTicked_by_id(db: Session, RestaurantTicked_id: int):
+    return db.query(models.RestaurantTicked).filter(models.RestaurantTicked.id == RestaurantTicked_id).first()
+
+#Get RestaurantTickeds
+def get_RestaurantTicked(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.RestaurantTicked).offset(skip).limit(limit).all()
+
+
+#create appolice
+def create_RestaurantTicked(db: Session,user_id:int, RestaurantTicked: schema.RestaurantTickedCreate):
+    db_RestaurantTicked = models.RestaurantTicked(**RestaurantTicked.dict(), 
+                                user_id=user_id)
+    db.add(db_RestaurantTicked)
+    db.commit()
+    db.refresh(db_RestaurantTicked)
+    return db_RestaurantTicked
+
+def update_RestaurantTicked(db: Session, RestaurantTicked: schema.RestaurantTickedUpdate, RestaurantTicked_data: schema.RestaurantTicked):
+    RestaurantTicked = RestaurantTicked.dict(exclude_unset=True)
+    for key, value in RestaurantTicked.items():
+            setattr(RestaurantTicked_data, key, value)
+    db.add(RestaurantTicked_data)
+    db.commit()
+    db.refresh(RestaurantTicked_data)
+    return RestaurantTicked_data
+
+
+def delete_RestaurantTicked(db: Session, RestaurantTicked: schema.RestaurantTicked):
+    if RestaurantTicked:
+        db.delete(RestaurantTicked)
+        db.commit()
+        return {"ok": True}
+
+
 #RestaurantOrder
 def get_RestauranteOrder_by_id(db: Session, id: int):
     return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.id == id).first()
@@ -305,12 +383,15 @@ def get_RestauranteOrder_by_id(db: Session, id: int):
 def get_RestauranteOrder_by_user_id(db: Session, user_id: int):
     return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.guest_id == user_id).all()
 
+def get_All_RestauranteOrder_by_ticked_id(db: Session, restaurant_ticked_id: int):
+    return db.query(models.RestaurantOrder).filter(models.RestaurantOrder.restaurant_ticked_id == restaurant_ticked_id).all()
+
 def get_RestauranteOrder(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.RestaurantOrder).offset(skip).limit(limit).all()
 
 
-def create_RestauranteOrder(db: Session, guest_id:int, restaurant_menu_id: int, RestaurantOrder: schema.RestaurantOrderCreate):
-    db_RestaurantOrder = models.RestaurantOrder(**RestaurantOrder.dict(), guest_id=guest_id, restaurant_menu_id=restaurant_menu_id)
+def create_RestauranteOrder(db: Session, guest_id:int, restaurant_menu_id: int,restaurant_ticked_id:int, RestaurantOrder: schema.RestaurantOrderCreate):
+    db_RestaurantOrder = models.RestaurantOrder(**RestaurantOrder.dict(), guest_id=guest_id, restaurant_menu_id=restaurant_menu_id, restaurant_ticked_id=restaurant_ticked_id)
     db.add(db_RestaurantOrder)
     db.commit()
     db.refresh(db_RestaurantOrder)

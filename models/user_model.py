@@ -25,3 +25,5 @@ class User(Base):
     user_payment = relationship("PaymentTransaction", back_populates='user')
     order_expirience = relationship("ExpiriencesOrder", back_populates='user')
     order_restaurant = relationship("RestaurantOrder", back_populates='user')
+    restaurant_backet = relationship("RestaurantTicked", back_populates='user')
+    expiriences_backet = relationship("ExpiriencesList", back_populates='user')

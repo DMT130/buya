@@ -66,7 +66,7 @@ def get_current_user(db: Session= Depends(get_db), token: str=Depends(oauth2_sch
     return user
 
 def get_current_active_user(current_user: schema.User=Depends(get_current_user)):
-    if current_user.activated:
+    if not current_user.activated:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
@@ -79,7 +79,7 @@ def check_admin_rights(db: Session= Depends(get_db), current_user: schema.User=D
         raise HTTPException(status_code=401, detail="Insuficient right to perform this action")
     if role.name != 'Admin':
         raise HTTPException(status_code=401, detail="Insuficient right to perform this action")
-    if current_user.activated:
+    if not current_user.activated:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 

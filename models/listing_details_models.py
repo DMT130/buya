@@ -45,11 +45,22 @@ class Expiriences(Base):
     user_listing = relationship("Listing", back_populates='additional_services')
     order_expirience = relationship("ExpiriencesOrder", back_populates='additional_services')
 
+class ExpiriencesList(Base):
+    __tablename__ = 'expiriences_list'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    creating_date = Column(DateTime, default=func.now())
+
+    user = relationship("User", back_populates='expiriences_backet')
+    order_expirience = relationship("ExpiriencesOrder", back_populates='expiriences_backet')
+    user_payment = relationship("PaymentTransaction", back_populates='expiriences_backet')
+
 class ExpiriencesOrder(Base):
     __tablename__ = 'expiriences_order'
 
     id = Column(Integer, primary_key=True, index=True)
     guest_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    expiriences_list_id = Column(Integer, ForeignKey('expiriences_list.id'), nullable=False)
     expiriences_id = Column(Integer, ForeignKey('expiriences.id'), nullable=False)
     number_of_people = Column(Integer, nullable=False)
     number_of_repetition = Column(Integer, nullable=False)
@@ -58,7 +69,7 @@ class ExpiriencesOrder(Base):
 
     user = relationship("User", back_populates='order_expirience')
     additional_services = relationship("Expiriences", back_populates='order_expirience')
-    user_payment = relationship("PaymentTransaction", back_populates='order_expirience')
+    expiriences_backet = relationship("ExpiriencesList", back_populates='order_expirience')
 
 
 class RestaurantMenu(Base):
@@ -74,6 +85,16 @@ class RestaurantMenu(Base):
     user_listing = relationship("Listing", back_populates='menu_restaurant')
     order_restaurant = relationship("RestaurantOrder", back_populates='menu_restaurant')
 
+class RestaurantTicked(Base):
+    __tablename__ = 'restaurant_ticked'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    creating_date = Column(DateTime, default=func.now())
+
+    user = relationship("User", back_populates='restaurant_backet')
+    order_restaurant = relationship("RestaurantOrder", back_populates='restaurant_backet')
+    user_payment = relationship("PaymentTransaction", back_populates='restaurant_backet')
+
 
 class RestaurantOrder(Base):
     __tablename__ = 'restaurant_order'
@@ -81,6 +102,7 @@ class RestaurantOrder(Base):
     id = Column(Integer, primary_key=True, index=True)
     guest_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     restaurant_menu_id = Column(Integer, ForeignKey('restaurant_menu.id'), nullable=False)
+    restaurant_ticked_id = Column(Integer, ForeignKey('restaurant_ticked.id'), nullable=False)
     date = Column(Date, nullable=False)
     type_of_meal = Column(String)
     total_cost  = Column(Float, nullable=False) 
@@ -88,7 +110,7 @@ class RestaurantOrder(Base):
 
     user = relationship("User", back_populates='order_restaurant')
     menu_restaurant = relationship("RestaurantMenu", back_populates='order_restaurant')
-    user_payment = relationship("PaymentTransaction", back_populates='order_restaurant')
+    restaurant_backet = relationship("RestaurantTicked", back_populates='order_restaurant')
 
 
 

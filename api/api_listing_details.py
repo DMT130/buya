@@ -313,10 +313,51 @@ def delete_expiriences(expiriences_id: int, db: Session = Depends(get_db), curre
         raise HTTPException(status_code=200, detail="expiriences deleted")
 
 
+#ExpiriencesList
+@router.post("/{user_id}/ExpiriencesList/", response_model=schema.ExpiriencesList, tags=["Expiriences List"])
+def create_ExpiriencesList(user_id:int, ExpiriencesList: schema.ExpiriencesListCreate, db: Session = Depends(get_db),
+                           current_user: schema_user.User=Depends(get_current_active_user)):
+    return crud.create_ExpiriencesList(db=db, ExpiriencesList=ExpiriencesList, user_id=user_id)
+
+
+@router.get("/ExpiriencesList/", response_model=List[schema.ExpiriencesList], tags=["Expiriences List"])
+def read_ExpiriencesList(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                         current_user: schema_user.User=Depends(get_current_active_user)):
+    db_ExpiriencesList = crud.get_ExpiriencesList(db, skip=skip, limit=limit)
+    return db_ExpiriencesList
+
+@router.get("/{ExpiriencesList_id}/ExpiriencesList/", response_model=schema.ExpiriencesList, tags=["Expiriences List"])
+def read_ExpiriencesList(ExpiriencesList_id: int, db: Session = Depends(get_db),
+                         current_user: schema_user.User=Depends(get_current_active_user)):
+    db_ExpiriencesList = crud.get_ExpiriencesList_by_id(db, ExpiriencesList_id)
+    if not db_ExpiriencesList:
+        raise HTTPException(status_code=404, detail="ExpiriencesList not found")
+    return db_ExpiriencesList
+
+@router.patch("/{ExpiriencesList_id}/ExpiriencesList/", response_model=schema.ExpiriencesList, tags=["Expiriences List"])
+def update_ExpiriencesList(ExpiriencesList_id: int, ExpiriencesList_sch: schema.ExpiriencesListUpdate, db: Session = Depends(get_db),
+                           current_user: schema_user.User=Depends(get_current_active_user)):
+     db_ExpiriencesList = crud.get_ExpiriencesList_by_id(db, ExpiriencesList_id)
+     if not db_ExpiriencesList:
+        raise HTTPException(status_code=404, detail="ExpiriencesList not found")
+     result = crud.update_ExpiriencesList(db, ExpiriencesList_sch, db_ExpiriencesList)
+     return result
+
+@router.delete("/{ExpiriencesList_id}/ExpiriencesList/", tags=["Expiriences List"])
+def delete_ExpiriencesList(ExpiriencesList_id: int, db: Session = Depends(get_db),
+                           current_user: schema_user.User=Depends(get_current_active_user)):
+    db_ExpiriencesList = crud.get_ExpiriencesList_by_id(db, ExpiriencesList_id)
+    if not db_ExpiriencesList:
+        raise HTTPException(status_code=404, detail="ExpiriencesList not found")
+    result = crud.delete_ExpiriencesList(db, db_ExpiriencesList)
+    if result:
+        raise HTTPException(status_code=200, detail="ExpiriencesList deleted")
+
+
 #ExpiriencesOrder
-@router.post("/{guest_id}/{expiriences_id}/expiriences_order/",
+@router.post("/{guest_id}/{expiriences_id}/{expiriences_list_id}/expiriences_order/",
                response_model=schema.ExpiriencesOrder, tags=["Expiriences Order"])
-def create_ExpiriencesOrder(guest_id:int, expiriences_id:int, 
+def create_ExpiriencesOrder(guest_id:int, expiriences_id:int, expiriences_list_id:int,
            ExpiriencesOrder: schema.ExpiriencesOrderCreate, db: Session = Depends(get_db), 
            current_user: schema_user.User=Depends(get_current_active_user)):
     #total _cost = price_person*number_of_people*number_of_repetition
@@ -324,7 +365,8 @@ def create_ExpiriencesOrder(guest_id:int, expiriences_id:int,
     ExpiriencesOrder.total_cost = db_expiriences.price_per_person*ExpiriencesOrder.number_of_people*ExpiriencesOrder.number_of_repetition
     return crud.create_ExpiriencesOrder(db=db, ExpiriencesOrder=ExpiriencesOrder, 
                                guest_id=guest_id, 
-                               expiriences_id=expiriences_id)
+                               expiriences_id=expiriences_id,
+                               expiriences_list_id=expiriences_list_id)
 
 
 @router.get("/ExpiriencesOrder/", response_model=List[schema.ExpiriencesOrder], tags=["Expiriences Order"])
@@ -402,10 +444,51 @@ def delete_RestaurantMenu(RestaurantMenu_id: int, db: Session = Depends(get_db),
         raise HTTPException(status_code=200, detail="RestaurantMenu deleted")
 
 
+#RestaurantTicked API
+@router.post("/{user_id}/RestaurantTicked/", response_model=schema.RestaurantTicked, tags=["Restaurant Ticked"])
+def create_RestaurantTicked(user_id:int, RestaurantTicked: schema.RestaurantTickedCreate, db: Session = Depends(get_db),
+                            current_user: schema_user.User=Depends(get_current_active_user)):
+    return crud.create_RestaurantTicked(db=db, RestaurantTicked=RestaurantTicked, user_id=user_id)
+
+
+@router.get("/RestaurantTicked/", response_model=List[schema.RestaurantTicked], tags=["Restaurant Ticked"])
+def read_RestaurantTicked(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                          current_user: schema_user.User=Depends(get_current_active_user)):
+    db_RestaurantTicked = crud.get_RestaurantTicked(db, skip=skip, limit=limit)
+    return db_RestaurantTicked
+
+@router.get("/{RestaurantTicked_id}/RestaurantTicked/", response_model=schema.RestaurantTicked, tags=["Restaurant Ticked"])
+def read_RestaurantTicked(RestaurantTicked_id: int, db: Session = Depends(get_db),
+                          current_user: schema_user.User=Depends(get_current_active_user)):
+    db_RestaurantTicked = crud.get_RestaurantTicked_by_id(db, RestaurantTicked_id)
+    if not db_RestaurantTicked:
+        raise HTTPException(status_code=404, detail="RestaurantTicked not found")
+    return db_RestaurantTicked
+
+@router.patch("/{RestaurantTicked_id}/RestaurantTicked/", response_model=schema.RestaurantTicked, tags=["Restaurant Ticked"])
+def update_RestaurantTicked(RestaurantTicked_id: int, RestaurantTicked_sch: schema.RestaurantTickedUpdate, db: Session = Depends(get_db),
+                            current_user: schema_user.User=Depends(get_current_active_user)):
+     db_RestaurantTicked = crud.get_RestaurantTicked_by_id(db, RestaurantTicked_id)
+     if not db_RestaurantTicked:
+        raise HTTPException(status_code=404, detail="RestaurantTicked not found")
+     result = crud.update_RestaurantTicked(db, RestaurantTicked_sch, db_RestaurantTicked)
+     return result
+
+@router.delete("/{RestaurantTicked_id}/RestaurantTicked/", tags=["Restaurant Ticked"])
+def delete_RestaurantTicked(RestaurantTicked_id: int, db: Session = Depends(get_db),
+                            current_user: schema_user.User=Depends(get_current_active_user)):
+    db_RestaurantTicked = crud.get_RestaurantTicked_by_id(db, RestaurantTicked_id)
+    if not db_RestaurantTicked:
+        raise HTTPException(status_code=404, detail="RestaurantTicked not found")
+    result = crud.delete_RestaurantTicked(db, db_RestaurantTicked)
+    if result:
+        raise HTTPException(status_code=200, detail="RestaurantTicked deleted")
+
+
 #RestauranteOrder
-@router.post("/{guest_id}/{restaurant_menu_id}/RestauranteOrder/", 
+@router.post("/{guest_id}/{restaurant_menu_id}/{restaurant_ticked_id}/RestauranteOrder/", 
               response_model=schema.RestaurantOrder, tags=["Restaurante Order"])
-def create_RestauranteOrder(guest_id:int, restaurant_menu_id:int, 
+def create_RestauranteOrder(guest_id:int, restaurant_menu_id:int, restaurant_ticked_id:int,
                             RestauranteOrder: schema.RestaurantOrderCreate, 
                             db: Session = Depends(get_db), 
                             current_user: schema_user.User=Depends(get_current_active_user)):
@@ -413,7 +496,8 @@ def create_RestauranteOrder(guest_id:int, restaurant_menu_id:int,
     RestauranteOrder.total_cost = RestauranteOrder.number_of_meals*restaurant_menu.price
     return crud.create_RestauranteOrder(db=db, RestaurantOrder=RestauranteOrder, 
                                guest_id=guest_id, 
-                               restaurant_menu_id=restaurant_menu_id)
+                               restaurant_menu_id=restaurant_menu_id,
+                               restaurant_ticked_id=restaurant_ticked_id)
 
 
 @router.get("/RestauranteOrder/", response_model=List[schema.RestaurantOrder], tags=["Restaurante Order"])
@@ -446,3 +530,5 @@ def delete_RestauranteOrder(RestauranteOrder_id: int, db: Session = Depends(get_
     result = crud.delete_RestauranteOrder(db, db_RestauranteOrder)
     if result:
         raise HTTPException(status_code=200, detail="RestauranteOrder deleted")
+    
+
