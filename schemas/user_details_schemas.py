@@ -75,3 +75,25 @@ class UserRole(UserRoleBase):
 
 class UserRoleUpdate(UserRoleCreate):
     role_id: Optional[int] = None
+
+
+
+#Email Confirmation
+class EmailConfirmationBase(BaseModel):
+    confirmation_code: str
+
+
+class EmailConfirmationCreate(EmailConfirmationBase):
+    pass
+
+class EmailConfirmation(EmailConfirmationBase):
+    id: int
+    user_id: int
+    creation_Date: date
+
+    class Config:
+        orm_mode = True
+
+
+class EmailConfirmationUpdate(EmailConfirmationCreate):
+    confirmation_code: Optional[str] = None

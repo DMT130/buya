@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date, time
-from typing import Optional
+from typing import Optional, List
 from schemas import listing_schemas
 
 
@@ -14,7 +14,7 @@ class ListingCategoryCreate(ListingCategoryBase):
 
 class ListingCategory(ListingCategoryBase):
     id: int
-    listings: list[listing_schemas.Listing] = []
+    listings: List[listing_schemas.Listing] = []
 
     class Config:
         orm_mode = True

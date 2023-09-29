@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 from schemas import listing_details_schemas
 
 
@@ -36,11 +36,11 @@ class Listing(ListingBase):
     id: int
     host_id: int
     creation_Date: date
-    Reviews: list[listing_details_schemas.Review] = []
-    Amenities: list[listing_details_schemas.Amenity] = []
-    Images: list[listing_details_schemas.Image] = []
-    HouseRules: list[listing_details_schemas.HouseRules] = []
-    HouseRules: list[listing_details_schemas.RestaurantMenu] = []
+    Reviews: List[listing_details_schemas.Review] = []
+    Amenities: List[listing_details_schemas.Amenity] = []
+    Images: List[listing_details_schemas.Image] = []
+    HouseRules: List[listing_details_schemas.HouseRules] = []
+    HouseRules: List[listing_details_schemas.RestaurantMenu] = []
 
     class Config:
         orm_mode = True

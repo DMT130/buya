@@ -33,3 +33,14 @@ class UserRole(Base):
     creation_Date = Column(DateTime, default=func.now())
 
     user = relationship("User", back_populates='user_role')
+
+
+class EmailConfirmation(Base):
+    __tablename__ = 'email_confirmation'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    confirmation_code = Column(String(255), nullable=False)
+    creation_Date = Column(DateTime, default=func.now())
+
+    user = relationship("User", back_populates='email_confirm')

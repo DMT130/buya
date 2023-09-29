@@ -113,3 +113,41 @@ def delete_userole(db: Session, userole: schema.UserRole):
         db.delete(userole)
         db.commit()
         return {"ok": True}
+    
+
+
+#EmailConfirmation
+def get_confirmation_email_by_id(db: Session, id: int):
+    return db.query(models.EmailConfirmation).filter(models.EmailConfirmation.id == id).first()
+
+def get_confirmation_email_by_user_id(db: Session, user_id: int):
+    return db.query(models.EmailConfirmation).filter(models.EmailConfirmation.user_id == user_id).first()
+
+#Get EmailConfirmation
+def get_confirmation_email(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.EmailConfirmation).offset(skip).limit(limit).all()
+
+
+#create EmailConfirmation
+def create_confirmation_email(db: Session,user_id:int, confirmation_code: str):
+    db_con_emai = models.EmailConfirmation(user_id=user_id, confirmation_code=confirmation_code)
+    db.add(db_con_emai)
+    db.commit()
+    db.refresh(db_con_emai)
+    return db_con_emai
+
+def update_confirmation_email(db: Session, con_emai: schema.EmailConfirmationUpdate, con_emai_data: schema.EmailConfirmation):
+    con_emai = con_emai.dict(exclude_unset=True)
+    for key, value in con_emai.items():
+            setattr(con_emai_data, key, value)
+    db.add(con_emai_data)
+    db.commit()
+    db.refresh(con_emai_data)
+    return con_emai_data
+
+
+def delete_confirmation_email(db: Session, con_emai: schema.EmailConfirmation):
+    if con_emai:
+        db.delete(con_emai)
+        db.commit()
+        return {"ok": True}

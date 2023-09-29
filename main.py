@@ -10,7 +10,6 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-
 app.include_router(api_auth_user.router, prefix="/api")
 app.include_router(api_listing.router, prefix="/api")
 app.include_router(api_listing_details.router, prefix="/api")
