@@ -28,3 +28,4 @@ class User(Base):
     restaurant_backet = relationship("RestaurantTicked", back_populates='user')
     expiriences_backet = relationship("ExpiriencesList", back_populates='user')
     email_confirm = relationship("EmailConfirmation", back_populates='user')
+    profile_image = relationship("ProfilePicture", back_populates='user')

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
@@ -29,8 +29,13 @@ conf = ConnectionConfig(
 async def generate_confirmation_code(db:Session, user_id: int, low: int = 100000, high: int= 999999):
     random_int = str(random.randint(low, high))
     hash_random_int = str(hash(random_int))
-    saved_hashed_code = crud_det.create_confirmation_email(db, user_id, hash_random_int).confirmation_code
-    return saved_hashed_code, random_int
+    confirmation_obj = crud_det.create_confirmation_email(db, user_id, hash_random_int)
+    saved_hashed_code = confirmation_obj.confirmation_code
+    deleted_confirmation_code = crud_det.delete_confirmation_email(db, confirmation_obj)
+    if deleted_confirmation_code is True:
+        return saved_hashed_code, random_int
+    else:
+        raise HTTPException(status_code=404, detail="user not found")
 
 def check_confirmation_code_match(db:Session, user_id: int, confirmation_code: int):
     confirmation_code = str(confirmation_code)

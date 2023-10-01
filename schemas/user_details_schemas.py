@@ -10,7 +10,6 @@ class UserDetailsBase(BaseModel):
     address: str
     emergency_contacts: str
     government_id: str
-    picture_url: str
 
 
 
@@ -31,7 +30,6 @@ class UserDetailsUpdate(UserDetailsCreate):
     address: Optional[str] = None
     emergency_contacts: Optional[str] = None
     government_id: Optional[str] = None
-    picture_url: Optional[str] = None
 
 
 
@@ -97,3 +95,30 @@ class EmailConfirmation(EmailConfirmationBase):
 
 class EmailConfirmationUpdate(EmailConfirmationCreate):
     confirmation_code: Optional[str] = None
+
+
+
+#Profile Picture
+class ProfilePictureBase(BaseModel):
+    name: str
+    path: str
+    type: str
+    
+
+
+class ProfilePictureCreate(ProfilePictureBase):
+    pass
+
+class ProfilePicture(ProfilePictureBase):
+    id: int
+    user_id: int
+    #creation_Date: date
+
+    class Config:
+        orm_mode = True
+
+
+class ProfilePictureUpdate(ProfilePictureCreate):
+    name: Optional[str] = None
+    path: Optional[str] = None
+    type: Optional[str] = None

@@ -12,7 +12,6 @@ class UserDetails(Base):
     address = Column(String(255), nullable=False)
     emergency_contacts = Column(String(255), nullable=False)
     government_id = Column(String(255), nullable=False)
-    picture_url = Column(String(255), nullable=False)
 
     user = relationship("User", back_populates='user_data')
 
@@ -44,3 +43,16 @@ class EmailConfirmation(Base):
     creation_Date = Column(DateTime, default=func.now())
 
     user = relationship("User", back_populates='email_confirm')
+
+
+class ProfilePicture(Base):
+    __tablename__ = "profile_picture"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    path = Column(String)
+    type = Column(String)
+    creation_date = Column(DateTime, default=func.now())
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    user = relationship("User", back_populates='profile_image')

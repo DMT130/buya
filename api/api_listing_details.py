@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException, UploadFile, File
 from query import crud_listing_details as crud
 from query import crud_listing as crud_list
 from models import listing_details_models as models
@@ -9,6 +9,7 @@ from schemas import user_schemas as schema_user
 from sqlalchemy.orm import Session
 from typing import List 
 from api.api_auth_user import get_current_active_user, get_current_user
+import shutil, os
 
 #models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
@@ -532,3 +533,57 @@ def delete_RestauranteOrder(RestauranteOrder_id: int, db: Session = Depends(get_
         raise HTTPException(status_code=200, detail="RestauranteOrder deleted")
     
 
+#Listing Images
+@router.post("/listing-images/", tags=["Listing Images"])
+def create_upload_files(listing_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db)):
+    for file in files:
+        filename = file.filename
+        file_path = os.path.join("ListingImages", filename)
+        with open(file_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+        image = models.Image(listing_id=listing_id, image_url=file_path)
+        db.add(image)
+        db.commit()
+        db.refresh(image)
+    return {"filenames": [file.filename for file in files]}
+
+#update Images
+@router.put("/listing-images/{image_id}", tags=["Listing Images"])
+def update_image(image_id: int, image: schema.ImageUpdate, db: Session = Depends(get_db)):
+    db_image = db.query(models.Image).filter(models.Image.id == image_id).first()
+    if not db_image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    for field, value in image.dict(exclude_unset=True).items():
+        setattr(db_image, field, value)
+    db.commit()
+    db.refresh(db_image)
+    return db_image
+
+#delete Images
+@router.delete("/listing-images/{image_id}", tags=["Listing Images"])
+def delete_image(image_id: int, db: Session = Depends(get_db)):
+    db_image = db.query(models.Image).filter(models.Image.id == image_id).first()
+    if not db_image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    shutil.rmtree(db_image.image_url, ignore_errors=False, onerror=None)
+    db.delete(db_image)
+    db.commit()
+    return {"message": "Image deleted successfully"}
+
+#Real all Images
+@router.get("/listing-images/", response_model=List[schema.Image], tags=["Listing Images"])
+def read_images(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    images = db.query(models.Image).offset(skip).limit(limit).all()
+    return images
+
+#Real one Images
+@router.get("/listing-images/{image_id}", response_model=schema.Image, tags=["Listing Images"])
+def read_one_image(image_id: int, db: Session = Depends(get_db)):
+    images = db.query(models.Image).filter(models.Image.id == image_id).first()
+    return images
+
+#Real one listing
+@router.get("/listing-images/{listing_id}", response_model=List[schema.Image], tags=["Listing Images"])
+def read_image_by_listing(listing_id: int, db: Session = Depends(get_db)):
+    images = db.query(models.Image).filter(models.Image.listing_id == listing_id).all()
+    return images

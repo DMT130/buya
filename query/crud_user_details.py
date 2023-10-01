@@ -146,8 +146,8 @@ def update_confirmation_email(db: Session, con_emai: schema.EmailConfirmationUpd
     return con_emai_data
 
 
-def delete_confirmation_email(db: Session, con_emai: schema.EmailConfirmation):
+def delete_confirmation_email(db: Session, con_emai):
     if con_emai:
         db.delete(con_emai)
         db.commit()
-        return {"ok": True}
+        return True

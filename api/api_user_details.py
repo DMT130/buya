@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from api.api_auth_user import get_current_active_user, check_admin_rights, get_current_user
 from schemas import user_schemas as schema_user
+import shutil, os
 
 #models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
@@ -138,3 +139,59 @@ def delete_userole(userole_id: int, db: Session = Depends(get_db),
     result = crud.delete_userole(db, db_userole)
     if result:
         raise HTTPException(status_code=200, detail="userole deleted")
+    
+
+
+
+#Asset Images
+@router.post("/profile-picture/", tags=["Profile Picture"])
+def create_upload_files(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    filename = file.filename
+    file_path = os.path.join("ProfilePicture", filename)
+    with open(file_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+    image = models.ProfilePicture(user_id=user_id, name=filename, path=file_path, type=file.content_type)
+    db.add(image)
+    db.commit()
+    db.refresh(image)
+    return {"image_url": file_path}
+
+#update Images
+@router.put("/profile-picture/{image_id}", tags=["Profile Picture"])
+def update_image(image_id: int, image: schema.ProfilePictureUpdate, db: Session = Depends(get_db)):
+    db_image = db.query(models.ProfilePicture).filter(models.ProfilePicture.id == image_id).first()
+    if not db_image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    for field, value in image.dict(exclude_unset=True).items():
+        setattr(db_image, field, value)
+    db.commit()
+    db.refresh(db_image)
+    return db_image
+
+#delete Images
+@router.delete("/profile-picture/{image_id}", tags=["Profile Picture"])
+def delete_image(image_id: int, db: Session = Depends(get_db)):
+    db_image = db.query(models.ProfilePicture).filter(models.ProfilePicture.id == image_id).first()
+    if not db_image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    db.delete(db_image)
+    db.commit()
+    return {"message": "Image deleted successfully"}
+
+#Real all Images
+@router.get("/profile-picture/", response_model=List[schema.ProfilePicture], tags=["Profile Picture"])
+def read_images(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    images = db.query(models.ProfilePicture).offset(skip).limit(limit).all()
+    return images
+
+#Real one Images
+@router.get("/profile-picture/{image_id}", response_model=schema.ProfilePicture, tags=["Profile Picture"])
+def read_one_image(image_id: int, db: Session = Depends(get_db)):
+    images = db.query(models.ProfilePicture).filter(models.ProfilePicture.id == image_id).first()
+    return images
+
+#Real one Asset_id
+@router.get("/profile-picture/{user_id}", response_model=schema.ProfilePicture, tags=["Profile Picture"])
+def read_image_by_asset(user_id: int, db: Session = Depends(get_db)):
+    images = db.query(models.ProfilePicture).filter(models.ProfilePicture.user_id == user_id).all()
+    return images

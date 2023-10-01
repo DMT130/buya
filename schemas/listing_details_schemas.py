@@ -95,7 +95,7 @@ class ImageCreate(ImageBase):
 class Image(ImageBase):
     id: int
     listing_id: int
-    creation_Date: date
+    #creation_Date: date
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
