@@ -3,11 +3,13 @@ from query import crud_payment as crud
 from models import payment_model as models
 from schemas import payment_schemas as schema
 from query import crud_listing_details as crud_sh
+from query.crud_mpesa_payment import mpesa_gest_charging
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from typing import List 
 from api.api_auth_user import get_current_active_user, check_admin_rights, get_current_user
 from schemas import user_schemas as schema_user
+import datetime
 
 #models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
@@ -23,8 +25,8 @@ def get_db():
 
 @router.post("/{user_id}/{bookings_id}/payment/", 
              response_model=schema.PaymentTransaction, tags=["Payment Transaction"])
-def create_payment(user_id:int, bookings_id:int,
-                    payment: schema.PaymentTransactionCreate, 
+async def create_payment(user_id:int, bookings_id:int,
+                    payment: schema.PaymentTransactionCreate,
                    db: Session = Depends(get_db),
                    current_user: schema_user.User=Depends(get_current_active_user),
                    expiriences_list_id:int=0,
@@ -57,10 +59,18 @@ def create_payment(user_id:int, bookings_id:int,
         expiriences_list_id = None
     if restaurant_ticked_id == 0:
         restaurant_ticked_id = None
+    
+    now = datetime.datetime.now()
 
-    return crud.create_payment(db=db, payment=payment, user_id=user_id, 
+    trans_id = 'BY'+now.strftime('%Y%m%d%H%M%S')
+    nr_to_charge = '258849540488'
+    payment_status = await mpesa_gest_charging(trans_id, nr_to_charge, payment.amount)
+    if payment_status.status_code in [200, 201, 202, 203]:
+        return crud.create_payment(db=db, payment=payment, user_id=user_id, 
                                bookings_id=bookings_id, restaurant_ticked_id=restaurant_ticked_id,
                                expiriences_list_id=expiriences_list_id)
+    else:
+        raise HTTPException(status_code=405, detail=payment_status.body)
 
 
 @router.get("/payment/", response_model=List[schema.PaymentTransaction], tags=["Payment Transaction"])
