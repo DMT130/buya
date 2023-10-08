@@ -8,6 +8,7 @@ from typing import Optional
 class PaymentTransactionBase(BaseModel):
     amount: float
     payment_method: str
+    
 
 
 class PaymentTransactionCreate(PaymentTransactionBase):
@@ -20,6 +21,8 @@ class PaymentTransaction(PaymentTransactionBase):
     expiriences_list_id: Optional[int] = None
     restaurant_ticked_id: Optional[int] = None
     payment_date: date
+    payment_direction: str
+    payment_reference: str
 
     class Config:
         orm_mode = True
@@ -28,3 +31,5 @@ class PaymentTransaction(PaymentTransactionBase):
 class PaymentTransactionUpdate(PaymentTransactionCreate):
     amount: Optional[float] = None
     payment_method: Optional[str] = None
+    payment_direction: Optional[str] = None
+    payment_reference: Optional[str] = None

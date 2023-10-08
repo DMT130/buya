@@ -8,13 +8,17 @@ def create_payment(db: Session,
                     payment: schema.PaymentTransactionCreate,
                     user_id: int,
                     bookings_id: int,
+                    payment_direction: str,
+                    payment_reference: str,
                     expiriences_list_id: int=0,
                     restaurant_ticked_id: int=0
                     ):
     db_payment = models.PaymentTransaction(**payment.dict(), 
                         user_id=user_id, bookings_id=bookings_id,
                         expiriences_list_id=expiriences_list_id,
-                        restaurant_ticked_id=restaurant_ticked_id)
+                        restaurant_ticked_id=restaurant_ticked_id,
+                        payment_direction=payment_direction,
+                        payment_reference=payment_reference)
     db.add(db_payment)
     db.commit()
     db.refresh(db_payment)

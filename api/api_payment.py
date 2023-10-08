@@ -3,7 +3,11 @@ from query import crud_payment as crud
 from models import payment_model as models
 from schemas import payment_schemas as schema
 from query import crud_listing_details as crud_sh
+from query import crud_listing as crud_li
+from query import crud_user_details as crud_user
 from query.crud_mpesa_payment import mpesa_gest_charging
+from query.crud_payout_b2b_mpesa import mpesa_payout_host_with_contract
+from query.crud_payout_b2c_mpesa import mpesa_payout_host_with_number
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from typing import List 
@@ -24,8 +28,9 @@ def get_db():
 
 
 @router.post("/{user_id}/{bookings_id}/payment/", 
-             response_model=schema.PaymentTransaction, tags=["Payment Transaction"])
-async def create_payment(user_id:int, bookings_id:int,
+             #response_model=schema.PaymentTransaction, 
+             tags=["Payment Transaction"])
+async def create_payment(user_id:int, bookings_id:int,nr_to_charge:str,
                     payment: schema.PaymentTransactionCreate,
                    db: Session = Depends(get_db),
                    current_user: schema_user.User=Depends(get_current_active_user),
@@ -61,16 +66,47 @@ async def create_payment(user_id:int, bookings_id:int,
         restaurant_ticked_id = None
     
     now = datetime.datetime.now()
+    credit = None
 
-    trans_id = 'BY'+now.strftime('%Y%m%d%H%M%S')
-    nr_to_charge = '258849540488'
+    trans_id = 'BY'+now.strftime('%Y%m%d%H%M%S')+'CD'
+
     payment_status = await mpesa_gest_charging(trans_id, nr_to_charge, payment.amount)
     if payment_status.status_code in [200, 201, 202, 203]:
-        return crud.create_payment(db=db, payment=payment, user_id=user_id, 
+        credit = crud.create_payment(db=db, payment=payment, user_id=user_id, 
                                bookings_id=bookings_id, restaurant_ticked_id=restaurant_ticked_id,
-                               expiriences_list_id=expiriences_list_id)
+                               expiriences_list_id=expiriences_list_id, payment_direction='Credit', payment_reference=trans_id)
     else:
         raise HTTPException(status_code=405, detail=payment_status.body)
+    
+    #Payout
+    listing_id = crud_sh.get_booking_by_id(db, bookings_id).listing_id
+    host_id = crud_li.get_listing_by_id(db, listing_id=listing_id).host_id
+    mpesa_details = crud_user.get_user_details_by_user_id(db, host_id)
+
+    trans_id_2 = 'BY'+now.strftime('%Y%m%d%H%M%S')+'DB'
+    payment.amount = payment.amount*0.9
+    try:
+
+        if mpesa_details.mpesa_company_id != None:
+            debit = await mpesa_payout_host_with_contract(trans_id_2,mpesa_details.mpesa_company_id,amount=payment.amount)
+
+        else:
+            debit = await mpesa_payout_host_with_number(trans_id_2, mpesa_details.mpesa_contact_number,
+                                                amount=payment.amount)
+    except:
+        raise HTTPException(status_code=405, detail='Unamble to payout host')
+
+    if debit.status_code in [200, 201, 202, 203]:
+        credit_2 = crud.create_payment(db=db, payment=payment, user_id=host_id, 
+                               bookings_id=bookings_id, restaurant_ticked_id=restaurant_ticked_id,
+                               expiriences_list_id=expiriences_list_id, 
+                               payment_direction='Debit', payment_reference=trans_id_2)
+    
+    return {'customer_payment': True, 'host_payout': True}
+
+    
+    
+
 
 
 @router.get("/payment/", response_model=List[schema.PaymentTransaction], tags=["Payment Transaction"])

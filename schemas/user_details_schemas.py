@@ -10,6 +10,8 @@ class UserDetailsBase(BaseModel):
     address: str
     emergency_contacts: str
     government_id: str
+    mpesa_contact_number: Optional[str] = None
+    mpesa_company_id: Optional[str] = None
 
 
 
@@ -30,7 +32,8 @@ class UserDetailsUpdate(UserDetailsCreate):
     address: Optional[str] = None
     emergency_contacts: Optional[str] = None
     government_id: Optional[str] = None
-
+    mpesa_contact_number: Optional[str] = None
+    mpesa_company_id: Optional[str] = None
 
 
 #Role

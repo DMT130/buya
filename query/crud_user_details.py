@@ -7,6 +7,9 @@ from schemas import user_details_schemas as schema
 def get_user_details_by_id(db: Session, user_details_id: int):
     return db.query(models.UserDetails).filter(models.UserDetails.id == user_details_id).first()
 
+def get_user_details_by_user_id(db: Session, user_id: int):
+    return db.query(models.UserDetails).filter(models.UserDetails.user_id == user_id).first()
+
 #Get user_details
 def get_user_details(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.UserDetails).offset(skip).limit(limit).all()

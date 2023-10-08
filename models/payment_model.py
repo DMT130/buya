@@ -13,6 +13,8 @@ class PaymentTransaction(Base):
     amount = Column(Float, nullable=False)
     payment_date = Column(DateTime, default=func.now())
     payment_method = Column(String(50), nullable=False)
+    payment_direction = Column(String(50), nullable=False)
+    payment_reference = Column(String(50), nullable=False)
 
     user = relationship("User", back_populates='user_payment')
     #order_restaurant = relationship("RestaurantOrder", back_populates='user_payment')

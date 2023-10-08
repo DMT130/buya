@@ -12,6 +12,8 @@ class UserDetails(Base):
     address = Column(String(255), nullable=False)
     emergency_contacts = Column(String(255), nullable=False)
     government_id = Column(String(255), nullable=False)
+    mpesa_contact_number = Column(String(20))
+    mpesa_company_id = Column(String(20))
 
     user = relationship("User", back_populates='user_data')
 
