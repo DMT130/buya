@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from database import engine, Base
 from api import (api_listing, api_listing_details, 
                  api_communication, api_user_details, 
-                 api_user, api_payment, api_auth_user)
+                 api_user, api_payment,
+                   api_auth_user)
 
 from fastapi.staticfiles import StaticFiles
 

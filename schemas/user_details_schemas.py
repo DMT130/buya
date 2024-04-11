@@ -23,7 +23,7 @@ class UserDetails(UserDetailsBase):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserDetailsUpdate(UserDetailsCreate):
@@ -49,7 +49,7 @@ class Role(RoleBase):
     creation_Date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RoleUpdate(RoleCreate):
@@ -71,7 +71,7 @@ class UserRole(UserRoleBase):
     creation_Date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserRoleUpdate(UserRoleCreate):
@@ -93,7 +93,7 @@ class EmailConfirmation(EmailConfirmationBase):
     creation_Date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class EmailConfirmationUpdate(EmailConfirmationCreate):
@@ -118,7 +118,7 @@ class ProfilePicture(ProfilePictureBase):
     #creation_Date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ProfilePictureUpdate(ProfilePictureCreate):

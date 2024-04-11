@@ -43,7 +43,7 @@ class Listing(ListingBase):
     HouseRules: List[listing_details_schemas.RestaurantMenu] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ListingUpdate(ListingCreate):

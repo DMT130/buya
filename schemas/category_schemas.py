@@ -17,7 +17,7 @@ class ListingCategory(ListingCategoryBase):
     listings: List[listing_schemas.Listing] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ListingCategoryUpdate(ListingCategoryCreate):

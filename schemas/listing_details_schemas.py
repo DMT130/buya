@@ -26,7 +26,7 @@ class Booking(BookingBase):
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BookingUpdate(BookingCreate):
@@ -54,7 +54,7 @@ class Review(ReviewBase):
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ReviewUpdate(ReviewCreate):
@@ -77,7 +77,7 @@ class Amenity(AmenityBase):
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AmenityUpdate(AmenityCreate):
@@ -99,7 +99,7 @@ class Image(ImageBase):
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ImageUpdate(ImageCreate):
@@ -124,7 +124,7 @@ class HouseRules(HouseRulesBase):
     #Addition_user_data: list[user_details_schemas.UsedDetails] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class HouseRulesUpdate(HouseRulesCreate):
@@ -148,7 +148,7 @@ class Favorite(FavoriteBase):
     listing_id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class FavoriteUpdate(FavoriteCreate):
@@ -170,7 +170,7 @@ class Expiriences(ExpiriencesBase):
     listing_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ExpiriencesUpdate(ExpiriencesCreate):
@@ -197,7 +197,7 @@ class ExpiriencesOrder(ExpiriencesOrderBase):
     expiriences_list_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ExpiriencesOrderUpdate(ExpiriencesOrderCreate):
@@ -222,7 +222,7 @@ class RestaurantMenu(RestaurantMenuBase):
     listing_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RestaurantMenuUpdate(RestaurantMenuCreate):
@@ -250,7 +250,7 @@ class RestaurantOrder(RestaurantOrderBase):
     restaurant_ticked_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RestaurantOrderUpdate(RestaurantOrderCreate):
@@ -275,7 +275,7 @@ class RestaurantTicked(RestaurantTickedBase):
     creating_date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RestaurantTickedUpdate(RestaurantTickedCreate):
@@ -297,7 +297,7 @@ class ExpiriencesList(ExpiriencesListBase):
     creating_date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ExpiriencesListUpdate(ExpiriencesListCreate):

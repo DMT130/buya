@@ -14,9 +14,9 @@ class EmailSchema(BaseModel):
 
 
 conf = ConnectionConfig(
-    MAIL_USERNAME = "b784d6ecbfad37",
-    MAIL_PASSWORD = "c54d17dfd2cce5",
-    MAIL_FROM = "admin@admin.com",
+    MAIL_USERNAME = "7a3e135c5807b0",
+    MAIL_PASSWORD = "7a9dc71f1523ef",
+    MAIL_FROM ="mailtrap@demomailtrap.com", #"admin@admin.com",
     MAIL_PORT = 587,
     MAIL_SERVER = "sandbox.smtp.mailtrap.io",
     MAIL_FROM_NAME="buya",

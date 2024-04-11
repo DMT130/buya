@@ -19,7 +19,7 @@ class Message(MessageBase):
     timestamp: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class MessageUpdate(MessageCreate):
@@ -42,7 +42,7 @@ class Notification(NotificationBase):
     timestamp: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class NotificationUpdate(NotificationCreate):

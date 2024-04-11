@@ -19,7 +19,7 @@ class User(UserBase):
     user_favorite_places: List[listing_details_schemas.Favorite] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserCreate(UserBase):
     password: str
